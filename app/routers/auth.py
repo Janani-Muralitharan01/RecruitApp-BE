@@ -56,7 +56,7 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
             "$set": {"verification_code": None, "updated_at": datetime.utcnow()}})
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail='There was an error sending email')
-    return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
+    return {'status': 'success', 'token': token.hex()}
 
 
 @router.post('/login')
