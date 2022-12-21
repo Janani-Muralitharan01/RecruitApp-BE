@@ -9,6 +9,7 @@ dnspython
 email-validator
 fastapi
 fastapi-jwt-auth
+fastapi-jwt-auth[asymmetric]
 fastapi-mail
 filelock
 h11
