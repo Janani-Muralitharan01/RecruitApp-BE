@@ -8,4 +8,6 @@ def dbconnection():
     return db
 
 User = dbconnection().users
+Form = dbconnection().forms
 User.create_index([("email", pymongo.ASCENDING)], unique=True)
+Form.create_index([("title", pymongo.ASCENDING)])
