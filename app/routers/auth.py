@@ -4,11 +4,10 @@ from random import randbytes
 from bson.objectid import ObjectId
 from fastapi import APIRouter, Request, Response, status, Depends, HTTPException
 from pydantic import EmailStr
-
 from app import oauth2
 from app.database import User
 from app.email import Email
-from app.serializers.userSerializers import userEntity
+from app.serializers.userSerializers import userEntity, createduserEntity 
 from .. import schemas, utils
 from app.oauth2 import AuthJWT
 from ..config import settings
@@ -61,10 +60,10 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
 
 @router.post('/login')
 def login(payload: schemas.LoginUserSchema, response: Response, Authorize: AuthJWT = Depends()):
-    
+
     # Check if the user exist
     user = userEntity(User.find_one({'email': payload.email.lower()}))
-    
+
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='Incorrect Email or Password')
@@ -151,3 +150,31 @@ def verify_me(token: str):
         "status": "success",
         "message": "Account verified successfully"
     }
+
+
+@router.post('/createuser', status_code=status.HTTP_201_CREATED)
+async def create_newuser(payload: schemas.createNewUserSchema):
+    # Check if user already exist
+    user = User.find_one({'email': payload.email.lower()})
+    if user:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail='User already exist')
+
+    payload.name = payload.name
+    payload.Designation = payload.Designation
+    payload.Gender = payload.Gender
+    payload.DateofBirth = payload.DateofBirth
+    payload.email = payload.email
+    payload.PhoneNumber = payload.PhoneNumber
+    result = User.insert_one(payload.dict())
+    new_user = User.find_one({'_id': result.inserted_id})
+    return createduserEntity(new_user)
+
+
+@router.get('/allusers',status_code=status.HTTP_201_CREATED)
+def get_me(user_id: str = Depends(oauth2.require_user)):
+    users = User.find()
+    usersData = []
+    for user in users:
+        usersData.append(createduserEntity(user))
+    return {"status": "success", "user":usersData}

@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import pymongo
 from app.config import settings
 def dbconnection():
-    client = MongoClient(settings.DATABASE_URL)
+    client =pymongo.MongoClient(settings.DATABASE_URL)
     print('Connected to MongoDB...')
     db = client[settings.MONGO_INITDB_DATABASE]
     return db

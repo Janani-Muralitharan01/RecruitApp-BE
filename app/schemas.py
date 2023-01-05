@@ -7,13 +7,18 @@ from bson.objectid import ObjectId
 class UserBaseSchema(BaseModel):
     name: str
     email: str
-    photo: str
+    photo: str | None = None
     role: str | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    Designation: str | None = None
+    Gender: str  | None = None
+    DateofBirth: str | None = None
+    PhoneNumber: str  | None = None
 
     class Config:
         orm_mode = True
+
 
 class CreateUserSchema(UserBaseSchema):
     password: constr(min_length=8)
@@ -25,16 +30,28 @@ class LoginUserSchema(BaseModel):
     email: EmailStr
     password: constr(min_length=8)
 
+
 class UserResponseSchema(UserBaseSchema):
     id: str
     pass
 
+class createNewUserSchema(UserBaseSchema):
+     id: str
+     pass
+
 class UserResponse(BaseModel):
     status: str
     user: UserResponseSchema
-    
+
+
+class AllUserResponse(BaseModel):
+  status: str
+  user: createNewUserSchema
+
+
 class FilteredUserResponse(UserBaseSchema):
     id: str
+
 
 class FormBaseSchema(BaseModel):
     title: str
@@ -50,15 +67,18 @@ class FormBaseSchema(BaseModel):
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
+
 class CreateFormSchema(FormBaseSchema):
     user: ObjectId | None = None
     pass
+
 
 class FormResponse(FormBaseSchema):
     id: str
     user: FilteredUserResponse
     created_at: datetime
     updated_at: datetime
+
 
 class UpdateFormSchema(BaseModel):
     title: str | None = None
@@ -73,7 +93,15 @@ class UpdateFormSchema(BaseModel):
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
+
 class ListFormResponse(BaseModel):
     status: str
     results: int
     posts: List[FormResponse]
+
+
+class createNewUserSchema(UserBaseSchema):
+    Designation: str 
+    Gender: str  
+    DateofBirth: str 
+    PhoneNumber: str  
