@@ -7,16 +7,14 @@ from pydantic import EmailStr
 from app import oauth2
 from app.database import User
 from app.email import Email
-from app.serializers.userSerializers import userEntity, createduserEntity 
+from app.serializers.userSerializers import userEntity, createduserEntity
 from .. import schemas, utils
 from app.oauth2 import AuthJWT
 from ..config import settings
 
-
 router = APIRouter()
 ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRES_IN
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
-
 
 @router.post('/register', status_code=status.HTTP_201_CREATED)
 async def create_user(payload: schemas.CreateUserSchema, request: Request):
@@ -57,7 +55,6 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
                             detail='There was an error sending email')
     return {'status': 'success', 'token': token.hex()}
 
-
 @router.post('/login')
 def login(payload: schemas.LoginUserSchema, response: Response, Authorize: AuthJWT = Depends()):
 
@@ -97,7 +94,6 @@ def login(payload: schemas.LoginUserSchema, response: Response, Authorize: AuthJ
     # Send both access
     return {'status': 'success', 'access_token': access_token}
 
-
 @router.get('/refresh')
 def refresh_token(response: Response, Authorize: AuthJWT = Depends()):
     try:
@@ -132,9 +128,7 @@ def refresh_token(response: Response, Authorize: AuthJWT = Depends()):
 def logout(response: Response, Authorize: AuthJWT = Depends(), user_id: str = Depends(oauth2.require_user)):
     Authorize.unset_jwt_cookies()
     response.set_cookie('logged_in', '', -1)
-
     return {'status': 'success'}
-
 
 @router.get('/verifyemail/{token}')
 def verify_me(token: str):
@@ -150,7 +144,6 @@ def verify_me(token: str):
         "status": "success",
         "message": "Account verified successfully"
     }
-
 
 @router.post('/createuser', status_code=status.HTTP_201_CREATED)
 async def create_newuser(payload: schemas.createNewUserSchema):
@@ -170,11 +163,35 @@ async def create_newuser(payload: schemas.createNewUserSchema):
     new_user = User.find_one({'_id': result.inserted_id})
     return createduserEntity(new_user)
 
-
-@router.get('/allusers',status_code=status.HTTP_201_CREATED)
+@router.get('/allusers', status_code=status.HTTP_201_CREATED)
 def get_me(user_id: str = Depends(oauth2.require_user)):
     users = User.find()
     usersData = []
     for user in users:
         usersData.append(createduserEntity(user))
-    return {"status": "success", "user":usersData}
+    return {"status": "success", "user": usersData}
+
+@router.put('/updateuser/{id}', status_code=status.HTTP_201_CREATED)
+async def update_user(id: str, payload: schemas.updateUserSchema):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid UserId: {id}")
+    update_user = User.find_one_and_update(
+        {'_id': ObjectId(id)}, {'$set': payload.dict(exclude_none=True)})
+    if not update_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'No post with this id: {id} found')
+    return {"status": "User-updated successfully"}
+
+@router.delete('/deleteuser/{id}', status_code=status.HTTP_201_CREATED)
+async def delete_user(id: str):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid id: {id}")
+    post = User.find_one_and_delete({'_id': ObjectId(id)})
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'No post with this id: {id} found')
+    return {"status": "User-deleted successfully"}
+
+

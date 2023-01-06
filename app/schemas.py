@@ -1,3 +1,4 @@
+import array
 from datetime import datetime
 from typing import List
 from pydantic import BaseModel, EmailStr, constr
@@ -104,4 +105,17 @@ class createNewUserSchema(UserBaseSchema):
     Designation: str 
     Gender: str  
     DateofBirth: str 
-    PhoneNumber: str  
+    PhoneNumber: str 
+
+class updateUserSchema(BaseModel):
+    name: str
+    Designation: str
+    Gender: str 
+    DateofBirth: str 
+    PhoneNumber: str
+    photo: str
+
+class formsSchema(BaseModel):
+   formname :str
+   formelements :dict | None = None
+  

@@ -25,3 +25,13 @@ def get_forms(limit: int = 10, page: int = 1, search: str = '', user_id: str = D
     ]
     forms = formListEntity(Form.aggregate(pipeline))
     return {'status': 'success', 'results': len(forms), 'forms': forms}
+
+@router.post('/allforms')
+async def create_form(payload: schemas.formsSchema):
+
+    payload.formname = payload.formname
+    payload.formelements = payload.formelements
+
+    formresult = Form.insert_one(payload.dict())
+    return 'ok'
+
