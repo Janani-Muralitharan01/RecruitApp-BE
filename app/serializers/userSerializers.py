@@ -13,7 +13,7 @@ def userEntity(user) -> dict:
 
 def createduserEntity(user) -> dict:
     return {
-       
+        "id": str(user["_id"]),
         "name": user["name"],
         "email": user["email"],
         "Designation": user["Designation"],

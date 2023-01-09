@@ -13,6 +13,7 @@ def formEntity(post) -> dict:
         "updated_at": post["updated_at"]
     }
 
+
 def populatedformEntity(post) -> dict:
     return {
         "id": str(post["_id"]),
@@ -26,5 +27,17 @@ def populatedformEntity(post) -> dict:
     }
 
 
+def getuserformEntity(post) -> dict:
+   
+    return {
+        "_id": str(post["_id"]),
+        "formname": post["formname"],
+        "recuriter": post['recuriter'],
+        "formelements": post["formelements"]
+    }
+
+
 def formListEntity(forms) -> list:
     return [populatedformEntity(form) for form in forms]
+
+

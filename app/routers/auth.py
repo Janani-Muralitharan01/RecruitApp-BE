@@ -163,7 +163,7 @@ async def create_newuser(payload: schemas.createNewUserSchema):
     new_user = User.find_one({'_id': result.inserted_id})
     return createduserEntity(new_user)
 
-@router.get('/allusers', status_code=status.HTTP_201_CREATED)
+@router.get('/allusers', status_code=status.HTTP_200_OK)
 def get_me(user_id: str = Depends(oauth2.require_user)):
     users = User.find()
     usersData = []
@@ -171,7 +171,7 @@ def get_me(user_id: str = Depends(oauth2.require_user)):
         usersData.append(createduserEntity(user))
     return {"status": "success", "user": usersData}
 
-@router.put('/updateuser/{id}', status_code=status.HTTP_201_CREATED)
+@router.put('/updateuser/{id}', status_code=status.HTTP_200_OK)
 async def update_user(id: str, payload: schemas.updateUserSchema):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -183,7 +183,7 @@ async def update_user(id: str, payload: schemas.updateUserSchema):
                             detail=f'No post with this id: {id} found')
     return {"status": "User-updated successfully"}
 
-@router.delete('/deleteuser/{id}', status_code=status.HTTP_201_CREATED)
+@router.delete('/deleteuser/{id}', status_code=status.HTTP_202_ACCEPTED)
 async def delete_user(id: str):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,

@@ -117,5 +117,5 @@ class updateUserSchema(BaseModel):
 
 class formsSchema(BaseModel):
    formname :str
+   recuriter: str
    formelements :dict | None = None
-  
