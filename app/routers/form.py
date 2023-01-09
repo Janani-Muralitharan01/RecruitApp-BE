@@ -65,7 +65,7 @@ async def update_form(id: str, payload: schemas.updateformSchema):
     return {"status": "Form-updated successfully"}
 
 
-@router.delete('/deleteuser/{id}', status_code=status.HTTP_202_ACCEPTED)
+@router.delete('/deleteforms/{id}', status_code=status.HTTP_202_ACCEPTED)
 async def delete_form(id: str):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
