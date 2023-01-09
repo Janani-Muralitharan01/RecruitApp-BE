@@ -119,3 +119,7 @@ class formsSchema(BaseModel):
    formname :str
    recuriter: str
    formelements :dict | None = None
+
+class updateformSchema(BaseModel):
+   formname :str
+   formelements :dict | None = None

@@ -28,13 +28,21 @@ def get_forms(limit: int = 10, page: int = 1, search: str = '', user_id: str = D
     forms = formListEntity(Form.aggregate(pipeline))
     return {'status': 'success', 'results': len(forms), 'forms': forms}
 
-@router.post('/allforms')
+@router.post('/createforms')
 async def create_form(payload: schemas.formsSchema):
     payload.formname = payload.formname
     payload.recuriter =payload.recuriter
     payload.formelements = payload.formelements
     Form.insert_one(payload.dict())
     return {'status' : 'Form updated successfully'}
+
+@router.get('/allforms', status_code=status.HTTP_200_OK)
+def get_me(user_id: str = Depends(oauth2.require_user)):
+    forms = Form.find()
+    formData = []
+    for form in forms:
+        formData.append(getuserformEntity(form))
+    return {"status": "success", "user": formData}
 
 @router.get('/getforms/{user_id}', status_code=status.HTTP_200_OK)
 async def get_form(user_id: str,):
@@ -43,6 +51,31 @@ async def get_form(user_id: str,):
     for form in forms:
         formData.append(getuserformEntity(form))
     return {"status": "success", "data":formData}
+
+@router.put('/updateforms/{id}', status_code=status.HTTP_200_OK)
+async def update_form(id: str, payload: schemas.updateformSchema):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid FormId: {id}")
+    update_form = Form.find_one_and_update(
+        {'_id': ObjectId(id)}, {'$set': payload.dict(exclude_none=True)})
+    if not update_form:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'No post with this id: {id} found')
+    return {"status": "Form-updated successfully"}
+
+
+@router.delete('/deleteuser/{id}', status_code=status.HTTP_202_ACCEPTED)
+async def delete_form(id: str):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid FormId: {id}")
+    post = Form.find_one_and_delete({'_id': ObjectId(id)})
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'No post with this id: {id} found')
+    return {"status": "Form-deleted successfully"}
+
 
 
 
