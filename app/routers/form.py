@@ -30,9 +30,9 @@ def get_forms(limit: int = 10, page: int = 1, search: str = '', user_id: str = D
 
 @router.post('/createforms')
 async def create_form(payload: schemas.formsSchema):
-    payload.formname = payload.formname
+    payload.modulename = payload.modulename
     payload.recuriter =payload.recuriter
-    payload.formelements = payload.formelements
+    payload.moduleelements = payload.moduleelements
     Form.insert_one(payload.dict())
     return {'status' : 'Form updated successfully'}
 

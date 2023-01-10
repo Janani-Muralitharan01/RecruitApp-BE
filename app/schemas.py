@@ -116,10 +116,11 @@ class updateUserSchema(BaseModel):
     photo: str
 
 class formsSchema(BaseModel):
-   formname :str
+   modulename :str
    recuriter: str
-   formelements :dict | None = None
+   moduleelements :dict | None = None
 
 class updateformSchema(BaseModel):
-   formname :str
-   formelements :dict | None = None
+   modulename :str
+   moduleelements :dict | None = None
+

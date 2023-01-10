@@ -31,9 +31,9 @@ def getuserformEntity(post) -> dict:
    
     return {
         "_id": str(post["_id"]),
-        "formname": post["formname"],
+        "modulename": post["modulename"],
         "recuriter": post['recuriter'],
-        "formelements": post["formelements"]
+        "moduleelements": post["moduleelements"]
     }
 
 
