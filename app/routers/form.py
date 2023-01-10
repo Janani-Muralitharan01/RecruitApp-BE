@@ -6,7 +6,7 @@ from app.database import Form, User
 from typing import Union
 from app.oauth2 import require_user
 from app import oauth2
-from app.serializers.formSerializers import formEntity, formListEntity, getuserformEntity
+from app.serializers.formSerializers import getmodulename, formListEntity, getuserformEntity
 from bson.objectid import ObjectId
 
 router = APIRouter()
@@ -44,6 +44,14 @@ def get_me(user_id: str = Depends(oauth2.require_user)):
         formData.append(getuserformEntity(form))
     return {"status": "success", "user": formData}
 
+@router.get('/getmodule', status_code=status.HTTP_200_OK)
+def get_me(user_id: str = Depends(oauth2.require_user)):
+    forms = Form.find()
+    formData = []
+    for form in forms:
+        formData.append(getmodulename(form))
+    return {"status": "success", "user": formData}
+
 @router.get('/getforms/{user_id}', status_code=status.HTTP_200_OK)
 async def get_form(user_id: str,):
     forms = Form.find({'recuriter': user_id})
@@ -75,6 +83,8 @@ async def delete_form(id: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'No post with this id: {id} found')
     return {"status": "Form-deleted successfully"}
+
+
 
 
 

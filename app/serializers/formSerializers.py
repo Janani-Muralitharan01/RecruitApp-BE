@@ -36,6 +36,13 @@ def getuserformEntity(post) -> dict:
         "moduleelements": post["moduleelements"]
     }
 
+def getmodulename(post) -> dict: 
+
+    return{
+         "_id": str(post["_id"]),
+        "modulename": post["modulename"],
+    }
+
 
 def formListEntity(forms) -> list:
     return [populatedformEntity(form) for form in forms]
