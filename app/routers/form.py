@@ -29,7 +29,7 @@ def get_forms(limit: int = 10, page: int = 1, search: str = '', user_id: str = D
     return {'status': 'success', 'results': len(forms), 'forms': forms}
 
 @router.post('/createforms')
-async def create_form(payload: schemas.formsSchema):
+async def create_form(payload: schemas.formsSchema, user_id: str = Depends(oauth2.require_user)):
     payload.modulename = payload.modulename
     payload.recuriter =payload.recuriter
     payload.moduleelements = payload.moduleelements

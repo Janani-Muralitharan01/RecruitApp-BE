@@ -124,3 +124,6 @@ class updateformSchema(BaseModel):
    modulename :str
    moduleelements :dict | None = None
 
+class formvalueSchema(BaseModel):
+  moduleelements :dict | None = None
+
