@@ -1,4 +1,5 @@
 import array
+from fastapi import FastAPI, Form
 from datetime import datetime
 from typing import List
 from pydantic import BaseModel, EmailStr, constr
@@ -13,9 +14,9 @@ class UserBaseSchema(BaseModel):
     created_at: datetime | None = None
     updated_at: datetime | None = None
     Designation: str | None = None
-    Gender: str  | None = None
+    Gender: str | None = None
     DateofBirth: str | None = None
-    PhoneNumber: str  | None = None
+    PhoneNumber: str | None = None
 
     class Config:
         orm_mode = True
@@ -32,13 +33,20 @@ class LoginUserSchema(BaseModel):
     password: constr(min_length=8)
 
 
+class CreatelogoSchema(BaseModel):
+    tittle: str
+    profile: str 
+
+
 class UserResponseSchema(UserBaseSchema):
     id: str
     pass
 
+
 class createNewUserSchema(UserBaseSchema):
-     id: str
-     pass
+    id: str
+    pass
+
 
 class UserResponse(BaseModel):
     status: str
@@ -46,8 +54,8 @@ class UserResponse(BaseModel):
 
 
 class AllUserResponse(BaseModel):
-  status: str
-  user: createNewUserSchema
+    status: str
+    user: createNewUserSchema
 
 
 class FilteredUserResponse(UserBaseSchema):
@@ -102,28 +110,31 @@ class ListFormResponse(BaseModel):
 
 
 class createNewUserSchema(UserBaseSchema):
-    Designation: str 
-    Gender: str  
-    DateofBirth: str 
-    PhoneNumber: str 
+    Designation: str
+    Gender: str
+    DateofBirth: str
+    PhoneNumber: str
+
 
 class updateUserSchema(BaseModel):
     name: str
     Designation: str
-    Gender: str 
-    DateofBirth: str 
+    Gender: str
+    DateofBirth: str
     PhoneNumber: str
     photo: str
 
+
 class formsSchema(BaseModel):
-   modulename :str
-   recuriter: str
-   moduleelements :dict | None = None
+    modulename: str
+    recuriter: str
+    moduleelements: dict | None = None
+
 
 class updateformSchema(BaseModel):
-   modulename :str
-   moduleelements :dict | None = None
+    modulename: str
+    moduleelements: dict | None = None
+
 
 class formvalueSchema(BaseModel):
-  moduleelements :dict | None = None
-
+    moduleelements: dict | None = None

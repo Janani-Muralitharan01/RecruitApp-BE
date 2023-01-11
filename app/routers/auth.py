@@ -4,9 +4,11 @@ from random import randbytes
 from bson.objectid import ObjectId
 from fastapi import APIRouter, Request, Response, status, Depends, HTTPException
 from pydantic import EmailStr
+from fastapi import FastAPI, File, UploadFile
 from app import oauth2
 from app.database import User
 from app.email import Email
+from fastapi import FastAPI, File, UploadFile
 from app.serializers.userSerializers import userEntity, createduserEntity
 from .. import schemas, utils
 from app.oauth2 import AuthJWT
@@ -172,7 +174,7 @@ def get_me(user_id: str = Depends(oauth2.require_user)):
     return {"status": "success", "user": usersData}
 
 @router.put('/updateuser/{id}', status_code=status.HTTP_200_OK)
-async def update_user(id: str, payload: schemas.updateUserSchema):
+async def update_user(id: str, payload: schemas.updateUserSchema, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid UserId: {id}")
@@ -184,7 +186,7 @@ async def update_user(id: str, payload: schemas.updateUserSchema):
     return {"status": "User-updated successfully"}
 
 @router.delete('/deleteuser/{id}', status_code=status.HTTP_202_ACCEPTED)
-async def delete_user(id: str):
+async def delete_user(id: str, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid id: {id}")

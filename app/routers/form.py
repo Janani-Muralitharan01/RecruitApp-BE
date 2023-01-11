@@ -31,10 +31,11 @@ def get_forms(limit: int = 10, page: int = 1, search: str = '', user_id: str = D
 @router.post('/createforms')
 async def create_form(payload: schemas.formsSchema, user_id: str = Depends(oauth2.require_user)):
     payload.modulename = payload.modulename
-    payload.recuriter =payload.recuriter
+    payload.recuriter = payload.recuriter
     payload.moduleelements = payload.moduleelements
     Form.insert_one(payload.dict())
-    return {'status' : 'Form updated successfully'}
+    return {'status': 'Form updated successfully'}
+
 
 @router.get('/allforms', status_code=status.HTTP_200_OK)
 def get_me(user_id: str = Depends(oauth2.require_user)):
@@ -52,16 +53,20 @@ def get_me(user_id: str = Depends(oauth2.require_user)):
         formData.append(getmodulename(form))
     return {"status": "success", "user": formData}
 
-@router.get('/getforms/{user_id}', status_code=status.HTTP_200_OK)
-async def get_form(user_id: str,):
-    forms = Form.find({'recuriter': user_id})
-    formData =[]
+@router.get('/getforms/{id}', status_code=status.HTTP_200_OK)
+async def get_form(id: str,):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid FormId: {id}")
+    forms = Form.find({'_id': ObjectId(id)})
+    formData = []
     for form in forms:
         formData.append(getuserformEntity(form))
-    return {"status": "success", "data":formData}
+    return {"status": "success", "data": formData}
+
 
 @router.put('/updateforms/{id}', status_code=status.HTTP_200_OK)
-async def update_form(id: str, payload: schemas.updateformSchema):
+async def update_form(id: str, payload: schemas.updateformSchema, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid FormId: {id}")
@@ -74,7 +79,7 @@ async def update_form(id: str, payload: schemas.updateformSchema):
 
 
 @router.delete('/deleteforms/{id}', status_code=status.HTTP_202_ACCEPTED)
-async def delete_form(id: str):
+async def delete_form(id: str,  user_id: str=Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid FormId: {id}")
@@ -83,9 +88,3 @@ async def delete_form(id: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'No post with this id: {id} found')
     return {"status": "Form-deleted successfully"}
-
-
-
-
-
-
