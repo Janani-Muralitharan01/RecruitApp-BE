@@ -9,7 +9,7 @@ from app import oauth2
 from app.database import UserLogos
 from app.email import Email
 from fastapi import FastAPI, File, UploadFile
-from app.serializers.userSerializers import userEntity, createduserEntity
+from app.serializers.formSerializers import getuserLogo
 from .. import schemas, utils
 from app.oauth2 import AuthJWT
 from ..config import settings
@@ -17,18 +17,28 @@ from ..config import settings
 router = APIRouter()
 
 
-
 @router.post('/createlogo', status_code=status.HTTP_201_CREATED)
 async def create_logo(profile: UploadFile, tittle: str = Form(), user_id: str = Depends(oauth2.require_user)):
-    UserLogos.insert_one({"fileName": profile.filename, "tittle": tittle})
+    UserLogos.insert_one({"profile": profile.filename, "tittle": tittle})
     return {"status": "Profile-image and tittle created successfully"}
+
+@router.get('/getuserlogo/{id}',status_code=status.HTTP_200_OK)
+async def get_logos(id: str,):
+     if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid FormId: {id}")
+     logos = UserLogos.find({'_id': ObjectId(id)})
+     userlogoData = []
+     for logo in logos:
+        userlogoData.append(getuserLogo(logo))
+     return {"status": "success", "data": userlogoData} 
 
 @router.put('/updatelogo/{id}', status_code=status.HTTP_200_OK)
 async def update_logo(id: str, profile: UploadFile, tittle: str = Form(),  user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid FormId: {id}")
-    update_logo = UserLogos.find_one_and_update({'_id': ObjectId(id)}, {'$set': {"fileName": profile.filename, "tittle": tittle }})
+    update_logo = UserLogos.find_one_and_update({'_id': ObjectId(id)}, {'$set': {"profile": profile.filename, "tittle": tittle }})
     if not update_logo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'No post with this id: {id} found')

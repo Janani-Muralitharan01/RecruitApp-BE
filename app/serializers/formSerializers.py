@@ -35,6 +35,12 @@ def getuserformEntity(post) -> dict:
         "recuriter": post['recuriter'],
         "moduleelements": post["moduleelements"]
     }
+def getuserLogo(post) -> dict: 
+     return {
+        "id": str(post["_id"]),
+        "profile": post["profile"],
+        "tittle": post["tittle"]
+     }
 
 def getmodulename(post) -> dict: 
 
