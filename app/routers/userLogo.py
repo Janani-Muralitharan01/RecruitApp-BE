@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import hashlib
+from io import BytesIO
 from random import randbytes
 from bson.objectid import ObjectId
 from fastapi import APIRouter, Form, Request, Response, status, Depends, HTTPException
@@ -19,8 +20,11 @@ router = APIRouter()
 
 @router.post('/createlogo', status_code=status.HTTP_201_CREATED)
 async def create_logo(profile: UploadFile, tittle: str = Form(), user_id: str = Depends(oauth2.require_user)):
-    UserLogos.insert_one({"profile": profile.filename, "tittle": tittle})
-    return {"status": "Profile-image and tittle created successfully"}
+    images = UserLogos.insert_one({"profile": profile.filename, "tittle": tittle})
+    logoDetails = UserLogos.find_one({'_id': images.inserted_id})
+    imageDetails = []
+    imageDetails.append(getuserLogo(logoDetails))
+    return {"status": "Profile-image and tittle created successfully", "data": imageDetails}
 
 @router.get('/getuserlogo/{id}',status_code=status.HTTP_200_OK)
 async def get_logos(id: str,):
