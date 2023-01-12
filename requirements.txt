@@ -28,3 +28,4 @@ sniffio
 starlette
 typing_extensions
 uvicorn
+python-multipart
