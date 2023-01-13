@@ -32,9 +32,10 @@ def get_forms(limit: int = 10, page: int = 1, search: str = '', user_id: str = D
 async def create_form(payload: schemas.formsSchema, user_id: str = Depends(oauth2.require_user)):
     payload.modulename = payload.modulename
     payload.recuriter = payload.recuriter
+    payload.created_at = datetime.utcnow()
     payload.moduleelements = payload.moduleelements
     Form.insert_one(payload.dict())
-    return {'status': 'Form updated successfully'}
+    return {'status': 'Form created successfully'}
 
 
 @router.get('/allforms', status_code=status.HTTP_200_OK)

@@ -1,3 +1,4 @@
+import datetime
 from app.serializers.userSerializers import embeddedUserResponse
 
 
@@ -28,29 +29,29 @@ def populatedformEntity(post) -> dict:
 
 
 def getuserformEntity(post) -> dict:
-   
     return {
         "_id": str(post["_id"]),
         "modulename": post["modulename"],
         "recuriter": post['recuriter'],
         "moduleelements": post["moduleelements"]
     }
-def getuserLogo(post) -> dict: 
-     return {
+
+
+def getuserLogo(post) -> dict:
+    return {
         "id": str(post["_id"]),
         "profile": post["profile"],
-        "tittle": post["tittle"]
-     }
+        "title": post["title"]
+    }
 
-def getmodulename(post) -> dict: 
 
-    return{
-         "_id": str(post["_id"]),
-        "modulename": post["modulename"],
+def getmodulename(post) -> dict:
+    return {
+        "_id": str(post["_id"]),
+        "created_at": post["created_at"],
+        "modulename": post["modulename"],  
     }
 
 
 def formListEntity(forms) -> list:
     return [populatedformEntity(form) for form in forms]
-
-
