@@ -10,32 +10,35 @@ from fastapi import FastAPI, File, UploadFile
 from app import oauth2
 from app.database import UserLogos
 from app.email import Email
-from fastapi import FastAPI, File, UploadFile
 from app.serializers.formSerializers import getuserLogo
 from .. import schemas, utils
 from app.oauth2 import AuthJWT
 from ..config import settings
+from botocore.client import BaseClient
+from fastapi.responses import JSONResponse
+from app.setting import s3_auth
+from app.upload import upload_file_to_bucket
 
 router = APIRouter()
 
-s3 = boto3.resource("s3")
-
-def s3_upload(image):
-    result = f'https://userlogoimage.s3.amazonaws.com/{image}'
-    print('result', result)
-    return result
-
-
 @router.post('/createlogo', status_code=status.HTTP_201_CREATED)
-async def create_logo(profile: UploadFile, title: str = Form(), user_id: str = Depends(oauth2.require_user)):
-    image = s3_upload(profile.filename)
-    print(image)
-    images = UserLogos.insert_one({"profile": image, "title": title})
-    logoDetails = UserLogos.find_one({'_id': images.inserted_id})
-    imageDetails = []
-    imageDetails.append(getuserLogo(logoDetails))
-    return {"status": "Profile-image and tittle created successfully", "data": imageDetails}
-
+async def upload_file(s3: BaseClient = Depends(s3_auth), profile: UploadFile = File(...), title: str = Form()):
+    upload_obj = upload_file_to_bucket(s3_client=s3, profile=profile.file,
+                                       bucket='userlogoimage',
+                                       object_name=profile.filename
+                                       )
+    if upload_obj:
+        image = f'https://userlogoimage.s3.amazonaws.com/{profile.filename}'
+        result = UserLogos.insert_one({"profile": image, "title": title})
+        logoDetails = UserLogos.find_one({'_id': result.inserted_id})
+        imageDetails = []
+        imageDetails.append(getuserLogo(logoDetails))
+        return {"status": "Profile-image and tittle created successfully", "data": imageDetails}
+            
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="File could not be uploaded")
+    
 
 @router.get('/getuserlogo/{id}', status_code=status.HTTP_200_OK)
 async def get_logos(id: str,):
@@ -63,7 +66,7 @@ async def update_logo(id: str, profile: UploadFile, title: str = Form(),  user_i
 
 
 @router.delete('/deletelogo/{id}', status_code=status.HTTP_200_OK)
-async def delete_logo(id: str,  user_id: str = Depends(oauth2.require_user)):
+async def delete_logo(id: str, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid FormId: {id}")
