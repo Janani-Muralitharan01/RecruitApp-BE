@@ -44,6 +44,12 @@ def getuserLogo(post) -> dict:
         "title": post["title"]
     }
 
+def getcurrentuserLogo(post) -> dict:
+    return {
+        "id": str(post["_id"]),
+        "profile": post["profile"],
+        "title": post["title"]
+    }
 
 def getmodulename(post) -> dict:
     return {
@@ -51,7 +57,6 @@ def getmodulename(post) -> dict:
         "created_at": post["created_at"],
         "modulename": post["modulename"],  
     }
-
 
 def formListEntity(forms) -> list:
     return [populatedformEntity(form) for form in forms]
