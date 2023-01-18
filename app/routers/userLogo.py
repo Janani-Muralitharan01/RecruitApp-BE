@@ -21,8 +21,13 @@ from app.upload import upload_file_to_bucket
 
 router = APIRouter()
 
+
+
+
 @router.post('/createlogo', status_code=status.HTTP_201_CREATED)
-async def upload_file(s3: BaseClient = Depends(s3_auth), profile: UploadFile = File(...), title: str = Form(), created_at=datetime.utcnow()):
+async def upload_file( s3: BaseClient = Depends(s3_auth), profile: UploadFile = File(...), title: str = Form()):
+    now = datetime.now()
+    created_at= datetime.now(),
     upload_obj = upload_file_to_bucket(s3_client=s3, profile=profile.file,
                                        bucket='userlogoimage',
                                        object_name=profile.filename
@@ -42,12 +47,12 @@ async def upload_file(s3: BaseClient = Depends(s3_auth), profile: UploadFile = F
 
 @router.get('/currentuserlogo', status_code=status.HTTP_200_OK)
 async def get_currentlogo():
-    logos = UserLogos.find().sort('created_at', -1)
+    logos = UserLogos.find().sort('created_at', -1).limit(1)
     userlogoData = []
     for logo in logos:
          userlogoData.append(getcurrentuserLogo(logo))
    
-    return {"data":userlogoData[0] }
+    return {"data":userlogoData }
 
 @router.get('/getuserlogo/{id}', status_code=status.HTTP_200_OK)
 async def get_logos(id: str,):

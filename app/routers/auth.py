@@ -35,7 +35,7 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
     payload.role = 'user'
     payload.verified = False
     payload.email = payload.email.lower()
-    payload.created_at = date.utcnow()
+    payload.created_at = datetime.utcnow()
     payload.updated_at = payload.created_at
     result = User.insert_one(payload.dict())
     new_user = User.find_one({'_id': result.inserted_id})

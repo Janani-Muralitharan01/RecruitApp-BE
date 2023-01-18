@@ -140,3 +140,6 @@ class updateformSchema(BaseModel):
 
 class formvalueSchema(BaseModel):
     moduleelements: dict | None = None
+
+class userlogoSchema(BaseModel):
+    created_at: datetime | None = None
