@@ -130,12 +130,14 @@ class formsSchema(BaseModel):
     recuriter: str
     created_at: datetime | None = None
     moduleelements: dict | None = None
+    tableData: dict | None = None
 
 
 class updateformSchema(BaseModel):
     modulename: str
     created_at=datetime.utcnow()
     moduleelements: dict | None = None
+    tableData: dict | None = None
 
 
 class formvalueSchema(BaseModel):

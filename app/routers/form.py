@@ -34,6 +34,7 @@ async def create_form(payload: schemas.formsSchema, user_id: str = Depends(oauth
     payload.recuriter = payload.recuriter
     payload.created_at = datetime.utcnow()
     payload.moduleelements = payload.moduleelements
+    payload.tableData = payload.tableData
     Form.insert_one(payload.dict())
     return {'status': 'Form created successfully'}
 
