@@ -33,7 +33,8 @@ def getuserformEntity(post) -> dict:
         "_id": str(post["_id"]),
         "modulename": post["modulename"],
         "recuriter": post['recuriter'],
-        "moduleelements": post["moduleelements"]
+        "moduleelements": post["moduleelements"],
+        "tableData": post["tableData"]
     }
 
 
@@ -55,7 +56,8 @@ def getmodulename(post) -> dict:
     return {
         "_id": str(post["_id"]),
         "created_at": post["created_at"],
-        "modulename": post["modulename"],  
+        "modulename": post["modulename"],
+        "tableData": post["tableData"]
     }
 
 def formListEntity(forms) -> list:
