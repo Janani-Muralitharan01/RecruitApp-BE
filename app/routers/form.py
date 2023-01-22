@@ -38,8 +38,6 @@ async def create_form(payload: schemas.formsSchema, user_id: str = Depends(oauth
     Form.insert_one(payload.dict())
     return {'status': 'Form created successfully'}
 
-
-
 @router.get('/allforms', status_code=status.HTTP_200_OK)
 def get_me(user_id: str = Depends(oauth2.require_user)):
     forms = Form.find()
@@ -66,6 +64,7 @@ async def get_form(id: str,):
     for form in forms:
         formData.append(getuserformEntity(form))
     return {"status": "success", "data": formData}
+
 
 @router.put('/updateforms/{id}', status_code=status.HTTP_200_OK)
 async def update_form(id: str, payload: schemas.updateformSchema, user_id: str = Depends(oauth2.require_user)):

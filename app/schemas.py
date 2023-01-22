@@ -134,6 +134,7 @@ class formsSchema(BaseModel):
 
 
 class tabledataSchema(BaseModel):
+    moduleId: str
     recuriter: str
     created_at: datetime | None = None
     tableData: dict | None = None
