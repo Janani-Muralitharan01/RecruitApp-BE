@@ -37,6 +37,13 @@ def getuserformEntity(post) -> dict:
         "tableData": post["tableData"]
     }
 
+def gettabledata(post) -> dict:
+    return {
+      "_id": str(post["_id"]),
+      "recuriter": post['recuriter'], 
+      "tableData": post["tableData"]
+    }
+
 
 def getuserLogo(post) -> dict:
     return {

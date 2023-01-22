@@ -35,7 +35,7 @@ class LoginUserSchema(BaseModel):
 
 class CreatelogoSchema(BaseModel):
     tittle: str
-    profile: str 
+    profile: str
 
 
 class UserResponseSchema(UserBaseSchema):
@@ -126,22 +126,29 @@ class updateUserSchema(BaseModel):
 
 
 class formsSchema(BaseModel):
-    modulename: str
+    modulename: str | None = None
     recuriter: str
     created_at: datetime | None = None
     moduleelements: dict | None = None
     tableData: dict | None = None
 
 
+class tabledataSchema(BaseModel):
+    recuriter: str
+    created_at: datetime | None = None
+    tableData: dict | None = None
+
+
 class updateformSchema(BaseModel):
     modulename: str
-    created_at=datetime.utcnow()
+    created_at = datetime.utcnow()
     moduleelements: dict | None = None
     tableData: dict | None = None
 
 
 class formvalueSchema(BaseModel):
     moduleelements: dict | None = None
+
 
 class userlogoSchema(BaseModel):
     created_at: datetime | None = None

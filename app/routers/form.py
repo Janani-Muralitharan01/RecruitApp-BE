@@ -6,7 +6,7 @@ from app.database import Form, User
 from typing import Union
 from app.oauth2 import require_user
 from app import oauth2
-from app.serializers.formSerializers import getmodulename, formListEntity, getuserformEntity
+from app.serializers.formSerializers import getmodulename, formListEntity, getuserformEntity,gettabledata
 from bson.objectid import ObjectId
 
 router = APIRouter()
@@ -39,6 +39,7 @@ async def create_form(payload: schemas.formsSchema, user_id: str = Depends(oauth
     return {'status': 'Form created successfully'}
 
 
+
 @router.get('/allforms', status_code=status.HTTP_200_OK)
 def get_me(user_id: str = Depends(oauth2.require_user)):
     forms = Form.find()
@@ -65,7 +66,6 @@ async def get_form(id: str,):
     for form in forms:
         formData.append(getuserformEntity(form))
     return {"status": "success", "data": formData}
-
 
 @router.put('/updateforms/{id}', status_code=status.HTTP_200_OK)
 async def update_form(id: str, payload: schemas.updateformSchema, user_id: str = Depends(oauth2.require_user)):

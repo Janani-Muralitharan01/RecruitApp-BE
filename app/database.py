@@ -9,8 +9,8 @@ def dbconnection():
 
 User = dbconnection().users
 Form = dbconnection().forms
-FormDates = dbconnection().formdates
+FormtableDates = dbconnection().formtabledates
 UserLogos = dbconnection().userlogos
 User.create_index([("email", pymongo.ASCENDING)], unique=True)
 Form.create_index([("title", pymongo.ASCENDING)])
-FormDates.create_index([("title", pymongo.ASCENDING)])
+FormtableDates.create_index([("title", pymongo.ASCENDING)])
