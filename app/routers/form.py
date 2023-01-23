@@ -6,27 +6,10 @@ from app.database import Form, User
 from typing import Union
 from app.oauth2 import require_user
 from app import oauth2
-from app.serializers.formSerializers import getmodulename, formListEntity, getuserformEntity,gettabledata
+from app.serializers.formSerializers import getmodulename, getuserformEntity
 from bson.objectid import ObjectId
 
 router = APIRouter()
-
-@router.get('/')
-def get_forms(limit: int = 10, page: int = 1, search: str = '', user_id: str = Depends(require_user)):
-    skip = (page - 1) * limit
-    pipeline = [
-        {'$match': {}},
-        {'$lookup': {'from': 'users', 'localField': 'user',
-                     'foreignField': '_id', 'as': 'user'}},
-        {'$unwind': '$user'},
-        {
-            '$skip': skip
-        }, {
-            '$limit': limit
-        }
-    ]
-    forms = formListEntity(Form.aggregate(pipeline))
-    return {'status': 'success', 'results': len(forms), 'forms': forms}
 
 @router.post('/createforms')
 async def create_form(payload: schemas.formsSchema, user_id: str = Depends(oauth2.require_user)):
