@@ -8,7 +8,7 @@ from bson.objectid import ObjectId
 
 router = APIRouter()
 
-
+#Create new-tableData
 @router.post('/createtabledata')
 async def create_tabledata(payload: schemas.tabledataSchema, user_id: str = Depends(oauth2.require_user)):
     payload.moduleId = payload.moduleId
@@ -18,7 +18,7 @@ async def create_tabledata(payload: schemas.tabledataSchema, user_id: str = Depe
     FormtableDates.insert_one(payload.dict())
     return {"status": "Form-tableData created successfully"}
     
-
+#get the particular-moudle-tableData
 @router.get('/moduletabledata/{id}', status_code=status.HTTP_200_OK)
 async def get_form(id: str,):
     if not ObjectId.is_valid(id):
@@ -30,6 +30,7 @@ async def get_form(id: str,):
         formtableData.append(getmoduletabledata(form))
     return {"status": "success", "data": formtableData}
 
+#get the particular-tableData
 @router.get('/gettabledata/{id}', status_code=status.HTTP_200_OK)
 async def get_form(id: str,):
     if not ObjectId.is_valid(id):
@@ -41,6 +42,7 @@ async def get_form(id: str,):
         formtableData.append(gettabledata(form))
     return {"status": "success", "data": formtableData}
 
+#get the all-tableData
 @router.get('/alltabledata', status_code=status.HTTP_200_OK)
 def get_me(user_id: str = Depends(oauth2.require_user)):
     formtables = FormtableDates.find()
@@ -49,6 +51,7 @@ def get_me(user_id: str = Depends(oauth2.require_user)):
         formtableDates.append(gettabledata(form))
     return {"status": "success", "user": formtableDates}
 
+#update the particular tableData
 @router.put('/updatetabledata/{id}', status_code=status.HTTP_200_OK)
 async def update_tabledata(id: str, payload: schemas.updatetabledataSchema, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
@@ -61,6 +64,7 @@ async def update_tabledata(id: str, payload: schemas.updatetabledataSchema, user
                             detail=f'No post with this id: {id} found')
     return {"status": "Form-tabledata updated successfully"}
 
+#Delete the particular tableData
 @router.delete('/deletetabledata/{id}', status_code=status.HTTP_202_ACCEPTED)
 async def delete_tabledata(id: str,  user_id: str=Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
