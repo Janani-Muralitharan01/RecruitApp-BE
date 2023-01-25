@@ -1,9 +1,5 @@
-import array
-from fastapi import FastAPI, Form
 from datetime import datetime
-from typing import List
 from pydantic import BaseModel, EmailStr, constr
-from bson.objectid import ObjectId
 
 
 class UserBaseSchema(BaseModel):
@@ -82,7 +78,6 @@ class formsSchema(BaseModel):
     recuriter: str
     created_at: datetime | None = None
     moduleelements: dict | None = None
-    tableData: dict | None = None
 
 
 class tabledataSchema(BaseModel):
@@ -96,7 +91,6 @@ class updateformSchema(BaseModel):
     modulename: str
     created_at = datetime.utcnow()
     moduleelements: dict | None = None
-    tableData: dict | None = None
 
 
 class formvalueSchema(BaseModel):

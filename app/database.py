@@ -1,4 +1,3 @@
-from pymongo import MongoClient
 import pymongo
 from app.config import settings
 def dbconnection():

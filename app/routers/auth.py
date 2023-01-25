@@ -1,13 +1,10 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import hashlib
 from random import randbytes
 from bson.objectid import ObjectId
 from fastapi import APIRouter, Request, Response, status, Depends, HTTPException
-from pydantic import EmailStr
-from fastapi import FastAPI, File, UploadFile
 from app import oauth2
 from app.database import User
-from app.email import Email
 from app.serializers.userSerializers import userEntity, createduserEntity
 from .. import schemas, utils
 from app.oauth2 import AuthJWT
@@ -17,7 +14,7 @@ router = APIRouter()
 ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRES_IN
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
-
+#Register new user
 @router.post('/register', status_code=status.HTTP_201_CREATED)
 async def create_user(payload: schemas.CreateUserSchema, request: Request):
     # Check if user already exist
@@ -56,7 +53,7 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
                             detail='There was an error sending email')
     return {'status': 'success', 'token': token.hex()}
 
-
+#login user
 @router.post('/login')
 def login(payload: schemas.LoginUserSchema, response: Response, Authorize: AuthJWT = Depends()):
     # Check if the user exist
@@ -88,7 +85,7 @@ def login(payload: schemas.LoginUserSchema, response: Response, Authorize: AuthJ
     # Send both access
     return {'status': 'success', 'access_token': access_token}
 
-
+#Refresh the user token
 @router.get('/refresh')
 def refresh_token(response: Response, Authorize: AuthJWT = Depends()):
     try:
@@ -117,14 +114,14 @@ def refresh_token(response: Response, Authorize: AuthJWT = Depends()):
                         ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
     return {'access_token': access_token}
 
-
+#Logout user
 @router.get('/logout', status_code=status.HTTP_200_OK)
 def logout(response: Response, Authorize: AuthJWT = Depends(), user_id: str = Depends(oauth2.require_user)):
     Authorize.unset_jwt_cookies()
     response.set_cookie('logged_in', '', -1)
     return {'status': 'success'}
 
-
+#Verify the user's email
 @router.get('/verifyemail/{token}')
 def verify_me(token: str):
     hashedCode = hashlib.sha256()
@@ -140,7 +137,7 @@ def verify_me(token: str):
         "message": "Account verified successfully"
     }
 
-
+#Create new recuriter(user)
 @router.post('/createuser', status_code=status.HTTP_201_CREATED)
 async def create_newuser(payload: schemas.createNewUserSchema):
     # Check if user already exist
@@ -158,7 +155,7 @@ async def create_newuser(payload: schemas.createNewUserSchema):
     new_user = User.find_one({'_id': result.inserted_id})
     return createduserEntity(new_user)
 
-
+#Get all users
 @router.get('/allusers', status_code=status.HTTP_200_OK)
 def get_me(user_id: str = Depends(oauth2.require_user)):
     users = User.find()
@@ -167,7 +164,7 @@ def get_me(user_id: str = Depends(oauth2.require_user)):
         usersData.append(createduserEntity(user))
     return {"status": "success", "user": usersData}
 
-
+#Update particular users
 @router.put('/updateuser/{id}', status_code=status.HTTP_200_OK)
 async def update_user(id: str, payload: schemas.updateUserSchema, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
@@ -180,7 +177,7 @@ async def update_user(id: str, payload: schemas.updateUserSchema, user_id: str =
                             detail=f'No post with this id: {id} found')
     return {"status": "User-updated successfully"}
 
-
+#Delete  particular users
 @router.delete('/deleteuser/{id}', status_code=status.HTTP_202_ACCEPTED)
 async def delete_user(id: str, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):

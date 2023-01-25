@@ -1,10 +1,7 @@
 from datetime import datetime
-from fastapi import Depends, HTTPException, status, APIRouter, Response
-from pymongo.collection import ReturnDocument
+from fastapi import Depends, HTTPException, status, APIRouter
 from app import schemas
 from app.database import FormtableDates
-from typing import Union
-from app.oauth2 import require_user
 from app import oauth2
 from app.serializers.formSerializers import getmoduletabledata, gettabledata
 from bson.objectid import ObjectId

@@ -5,7 +5,6 @@ def getuserformEntity(post) -> dict:
         "modulename": post["modulename"],
         "recuriter": post['recuriter'],
         "moduleelements": post["moduleelements"],
-        "tableData": post["tableData"]
     }
 
 def getmoduletabledata(post) -> dict:
@@ -42,6 +41,5 @@ def getmodulename(post) -> dict:
         "_id": str(post["_id"]),
         "created_at": post["created_at"],
         "modulename": post["modulename"],
-        "tableData": post["tableData"]
     }
 

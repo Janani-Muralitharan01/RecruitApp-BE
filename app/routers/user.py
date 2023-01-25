@@ -7,6 +7,7 @@ from .. import schemas, oauth2
 
 router = APIRouter()
 
+#Get the your user
 @router.get('/me', response_model=schemas.UserResponse)
 def get_me(user_id: str = Depends(oauth2.require_user)):
     user = userResponseEntity(User.find_one({'_id': ObjectId(str(user_id))}))

@@ -1,21 +1,11 @@
-from datetime import datetime, timedelta
-import hashlib
-from io import BytesIO
-import boto3
-from random import randbytes
+from datetime import datetime
 from bson.objectid import ObjectId
-from fastapi import APIRouter, Form, Request, Response, status, Depends, HTTPException
-from pydantic import EmailStr
-from fastapi import FastAPI, File, UploadFile
+from fastapi import APIRouter, Form, status, Depends, HTTPException
+from fastapi import File, UploadFile
 from app import oauth2
 from app.database import UserLogos
-from app.email import Email
 from app.serializers.formSerializers import getuserLogo,getcurrentuserLogo
-from .. import schemas, utils
-from app.oauth2 import AuthJWT
-from ..config import settings
 from botocore.client import BaseClient
-from fastapi.responses import JSONResponse
 from app.setting import s3_auth
 from app.upload import upload_file_to_bucket
 
@@ -23,7 +13,7 @@ router = APIRouter()
 
 
 
-
+#Create new user logo-profile-image using s3 bucket
 @router.post('/createlogo', status_code=status.HTTP_201_CREATED)
 async def upload_file( s3: BaseClient = Depends(s3_auth), profile: UploadFile = File(...), title: str = Form()):
     now = datetime.now()
@@ -44,7 +34,7 @@ async def upload_file( s3: BaseClient = Depends(s3_auth), profile: UploadFile = 
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="File could not be uploaded")
 
-
+#Get the current user-logo(last-posted user logo-profile-image)
 @router.get('/currentuserlogo', status_code=status.HTTP_200_OK)
 async def get_currentlogo():
     logos = UserLogos.find().sort('created_at', -1).limit(1)
@@ -54,6 +44,7 @@ async def get_currentlogo():
    
     return {"data":userlogoData }
 
+#Get particular user logo-profile-image
 @router.get('/getuserlogo/{id}', status_code=status.HTTP_200_OK)
 async def get_logos(id: str,):
     if not ObjectId.is_valid(id):
@@ -65,7 +56,7 @@ async def get_logos(id: str,):
         userlogoData.append(getuserLogo(logo))
     return {"status": "success", "data": userlogoData}
 
-
+#Update particular user logo-profile-image
 @router.put('/updatelogo/{id}', status_code=status.HTTP_200_OK)
 async def update_logo(id: str, profile: UploadFile, title: str = Form(),  user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
@@ -78,7 +69,7 @@ async def update_logo(id: str, profile: UploadFile, title: str = Form(),  user_i
                             detail=f'No post with this id: {id} found')
     return {"status": "User-logo and tittle updated successfully"}
 
-
+#Delete particular user logo-profile-image
 @router.delete('/deletelogo/{id}', status_code=status.HTTP_200_OK)
 async def delete_logo(id: str, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(id):
